@@ -5,7 +5,7 @@
 A governed, multi-model system for serious coding work.  
 Cheap parallel execution. Independent critique. Real verification. No theater.
 
-> **Full visual & interactive version**: [index.html](index.html)
+> **View the full interactive version**: [https://parvezsyed.github.io/owa-coding-pattern/](https://parvezsyed.github.io/owa-coding-pattern/)
 
 ---
 
