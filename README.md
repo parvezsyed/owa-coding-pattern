@@ -27,7 +27,7 @@ Three distinct roles with clear handoff protocols and termination criteria.
 
 **Core Principle**: The adversary only runs on high-stakes work. Everything else uses the cheaper worker pool.
 
-```svg
+<div style="max-width:100%; overflow-x:auto;">
 <svg class="arch-svg" viewBox="0 0 1000 410" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -121,7 +121,7 @@ Three distinct roles with clear handoff protocols and termination criteria.
     <!-- ===== SECTION LABEL ===== -->
     <text x="500" y="360" text-anchor="middle" fill="#e4e7eb" font-size="10" font-weight="500" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">The Orchestrator is the sole decision maker. Workers execute. The Adversary critiques. None of these models trust each other.</text>
   </svg>
-```
+</div>
 
 ---
 
@@ -129,7 +129,7 @@ Three distinct roles with clear handoff protocols and termination criteria.
 
 The iteration cycle that makes this pattern powerful — each phase has a clear owner and output:
 
-```svg
+<div style="max-width:100%; overflow-x:auto;">
 <svg class="arch-svg" viewBox="0 0 1100 280" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="phaseBg" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -233,7 +233,7 @@ The iteration cycle that makes this pattern powerful — each phase has a clear 
     <rect x="605" y="245" width="12" height="12" rx="3" fill="#ef4444" opacity="0.8"/>
     <text x="623" y="255" fill="#9ca3af" font-size="9.5">Adversary (Grok 4.3)</text>
   </svg>
-```
+</div>
 
 ---
 
