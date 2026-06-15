@@ -1,0 +1,103 @@
+<svg viewBox="0 0 1100 280" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="phaseBg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#0f1216"/>
+        <stop offset="100%" stop-color="#0a0c0f"/>
+      </linearGradient>
+      <marker id="parr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#4b5563"/>
+      </marker>
+    </defs>
+
+    <!-- Background -->
+    <rect x="0" y="0" width="1100" height="280" rx="16" fill="url(#phaseBg)" stroke="#1f242c" stroke-width="1"/>
+
+    <!-- PHASE 1: DECOMPOSE -->
+    <rect x="15" y="30" width="160" height="195" rx="12" fill="#181b20" stroke="#3b82f6" stroke-width="2.5"/>
+    <circle cx="95" cy="30" r="15" fill="#1e3a8a" stroke="#3b82f6" stroke-width="2"/>
+    <text x="95" y="35" text-anchor="middle" fill="#e4e7eb" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">1</text>
+    <text x="95" y="68" text-anchor="middle" fill="#e4e7eb" font-size="13" font-weight="700" letter-spacing="0.04em">DECOMPOSE</text>
+    <text x="95" y="86" text-anchor="middle" fill="#93c5fd" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">GPT-5.5</text>
+    <line x1="30" y1="96" x2="160" y2="96" stroke="#252a32" stroke-width="1"/>
+    <text x="30" y="115" fill="#9ca3af" font-size="9.5">Break task into bounded,</text>
+    <text x="30" y="133" fill="#9ca3af" font-size="9.5">testable slices. Define</text>
+    <text x="30" y="151" fill="#9ca3af" font-size="9.5">interfaces &amp; criteria.</text>
+
+    <!-- Arrow 1→2 -->
+    <line x1="175" y1="127" x2="190" y2="127" stroke="#4b5563" stroke-width="2" marker-end="url(#parr)"/>
+
+    <!-- PHASE 2: IMPLEMENT -->
+    <rect x="195" y="30" width="160" height="195" rx="12" fill="#181b20" stroke="#10b981" stroke-width="2.5"/>
+    <circle cx="275" cy="30" r="15" fill="#064e3b" stroke="#10b981" stroke-width="2"/>
+    <text x="275" y="35" text-anchor="middle" fill="#e4e7eb" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">2</text>
+    <text x="275" y="68" text-anchor="middle" fill="#e4e7eb" font-size="13" font-weight="700" letter-spacing="0.04em">IMPLEMENT</text>
+    <text x="275" y="86" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">DeepSeek V4 Flash</text>
+    <line x1="210" y1="96" x2="340" y2="96" stroke="#252a32" stroke-width="1"/>
+    <text x="210" y="115" fill="#9ca3af" font-size="9.5">Parallel execution (up</text>
+    <text x="210" y="133" fill="#9ca3af" font-size="9.5">to 8). Each produces</text>
+    <text x="210" y="151" fill="#9ca3af" font-size="9.5">diff + test results.</text>
+
+    <!-- Arrow 2→3 -->
+    <line x1="355" y1="127" x2="370" y2="127" stroke="#4b5563" stroke-width="2" marker-end="url(#parr)"/>
+
+    <!-- PHASE 3: INTEGRATE -->
+    <rect x="375" y="30" width="160" height="195" rx="12" fill="#181b20" stroke="#3b82f6" stroke-width="2.5"/>
+    <circle cx="455" cy="30" r="15" fill="#1e3a8a" stroke="#3b82f6" stroke-width="2"/>
+    <text x="455" y="35" text-anchor="middle" fill="#e4e7eb" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">3</text>
+    <text x="455" y="68" text-anchor="middle" fill="#e4e7eb" font-size="13" font-weight="700" letter-spacing="0.04em">INTEGRATE</text>
+    <text x="455" y="86" text-anchor="middle" fill="#93c5fd" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">GPT-5.5</text>
+    <line x1="390" y1="96" x2="520" y2="96" stroke="#252a32" stroke-width="1"/>
+    <text x="390" y="115" fill="#9ca3af" font-size="9.5">Collect outputs, merge,</text>
+    <text x="390" y="133" fill="#9ca3af" font-size="9.5">run cross-cutting tests.</text>
+    <text x="390" y="151" fill="#9ca3af" font-size="9.5">Resolve all conflicts.</text>
+
+    <!-- Arrow 3→4 -->
+    <line x1="535" y1="127" x2="550" y2="127" stroke="#4b5563" stroke-width="2" marker-end="url(#parr)"/>
+
+    <!-- PHASE 4: CRITIQUE -->
+    <rect x="555" y="30" width="160" height="195" rx="12" fill="#181b20" stroke="#ef4444" stroke-width="2.5"/>
+    <circle cx="635" cy="30" r="15" fill="#7f1d1d" stroke="#ef4444" stroke-width="2"/>
+    <text x="635" y="35" text-anchor="middle" fill="#e4e7eb" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">4</text>
+    <text x="635" y="68" text-anchor="middle" fill="#e4e7eb" font-size="13" font-weight="700" letter-spacing="0.04em">CRITIQUE</text>
+    <text x="635" y="86" text-anchor="middle" fill="#fca5a5" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Grok 4.3</text>
+    <line x1="570" y1="96" x2="700" y2="96" stroke="#252a32" stroke-width="1"/>
+    <text x="570" y="115" fill="#9ca3af" font-size="9.5">For high-risk segments,</text>
+    <text x="570" y="133" fill="#9ca3af" font-size="9.5">spawn the adversary.</text>
+    <text x="570" y="151" fill="#9ca3af" font-size="9.5">HELD/STRAINED/BROKEN.</text>
+
+    <!-- Arrow 4→5 -->
+    <line x1="715" y1="127" x2="730" y2="127" stroke="#4b5563" stroke-width="2" marker-end="url(#parr)"/>
+
+    <!-- PHASE 5: REFINE -->
+    <rect x="735" y="30" width="160" height="195" rx="12" fill="#181b20" stroke="#3b82f6" stroke-width="2.5"/>
+    <circle cx="815" cy="30" r="15" fill="#1e3a8a" stroke="#3b82f6" stroke-width="2"/>
+    <text x="815" y="35" text-anchor="middle" fill="#e4e7eb" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">5</text>
+    <text x="815" y="68" text-anchor="middle" fill="#e4e7eb" font-size="13" font-weight="700" letter-spacing="0.04em">REFINE</text>
+    <text x="815" y="86" text-anchor="middle" fill="#93c5fd" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">GPT-5.5</text>
+    <line x1="750" y1="96" x2="880" y2="96" stroke="#252a32" stroke-width="1"/>
+    <text x="750" y="115" fill="#9ca3af" font-size="9.5">Address adversary</text>
+    <text x="750" y="133" fill="#9ca3af" font-size="9.5">findings. Re-spawn for</text>
+    <text x="750" y="151" fill="#9ca3af" font-size="9.5">BROKEN, patch STRAINED.</text>
+
+    <!-- Arrow 5→6 -->
+    <line x1="895" y1="127" x2="910" y2="127" stroke="#4b5563" stroke-width="2" marker-end="url(#parr)"/>
+
+    <!-- PHASE 6: DELIVER -->
+    <rect x="915" y="30" width="160" height="195" rx="12" fill="#181b20" stroke="#3b82f6" stroke-width="2.5"/>
+    <circle cx="995" cy="30" r="15" fill="#1e3a8a" stroke="#3b82f6" stroke-width="2"/>
+    <text x="995" y="35" text-anchor="middle" fill="#e4e7eb" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">6</text>
+    <text x="995" y="68" text-anchor="middle" fill="#e4e7eb" font-size="13" font-weight="700" letter-spacing="0.04em">DELIVER</text>
+    <text x="995" y="86" text-anchor="middle" fill="#93c5fd" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">GPT-5.5</text>
+    <line x1="930" y1="96" x2="1060" y2="96" stroke="#252a32" stroke-width="1"/>
+    <text x="930" y="115" fill="#9ca3af" font-size="9.5">Final validation, commit,</text>
+    <text x="930" y="133" fill="#9ca3af" font-size="9.5">summary. Only declare</text>
+    <text x="930" y="151" fill="#9ca3af" font-size="9.5">done after re-verify.</text>
+
+    <!-- ROLE LEGEND -->
+    <rect x="280" y="245" width="12" height="12" rx="3" fill="#3b82f6" opacity="0.8"/>
+    <text x="298" y="255" fill="#9ca3af" font-size="9.5">Orchestrator (GPT-5.5)</text>
+    <rect x="450" y="245" width="12" height="12" rx="3" fill="#10b981" opacity="0.8"/>
+    <text x="468" y="255" fill="#9ca3af" font-size="9.5">Worker (DeepSeek)</text>
+    <rect x="605" y="245" width="12" height="12" rx="3" fill="#ef4444" opacity="0.8"/>
+    <text x="623" y="255" fill="#9ca3af" font-size="9.5">Adversary (Grok 4.3)</text>
+  </svg>
