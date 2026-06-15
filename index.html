@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OWA Coding Pattern • Adversarial Multi-Agent Coding</title>
+  <style>
+    :root {
+      --bg: #0a0c0f;
+      --bg-elev: #111316;
+      --bg-card: #181b20;
+      --bg-deep: #0f1216;
+      --border: #252a32;
+      --border-sub: #1f242c;
+      --text: #e4e7eb;
+      --text-sec: #9ca3af;
+      --text-mut: #6b7280;
+      --blue: #3b82f6;
+      --blue-light: #60a5fa;
+      --green: #10b981;
+      --green-light: #34d399;
+      --red: #ef4444;
+      --red-light: #f87171;
+      --amber: #f59e0b;
+      --cyan: #06b6d4;
+      --shadow: 0 10px 30px rgba(0,0,0,0.5);
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro", "Inter", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      font-size: 16px;
+    }
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 64px;
+      background: rgba(10,12,15,0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      z-index: 100;
+    }
+    .nav .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+    .nav .logo span { color: var(--blue-light); }
+    .nav .links {
+      display: flex;
+      gap: 28px;
+    }
+    .nav .links a {
+      color: var(--text-sec);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+    .nav .links a:hover { color: var(--text); }
+    .nav .meta {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.75rem;
+      color: var(--text-mut);
+    }
+
+    .hero {
+      padding: 120px 32px 80px;
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: 3.8rem;
+      font-weight: 800;
+      letter-spacing: -0.045em;
+      line-height: 1.05;
+      margin-bottom: 20px;
+    }
+    .hero .tag {
+      font-size: 1.35rem;
+      color: var(--text-sec);
+      max-width: 720px;
+      margin: 0 auto 32px;
+      line-height: 1.35;
+    }
+    .hero .premise {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      color: var(--text-sec);
+    }
+    .hero .premise strong { color: var(--text); }
+
+    .visual {
+      max-width: 1100px;
+      margin: 0 auto 80px;
+      padding: 0 32px;
+    }
+    .visual .label {
+      text-align: center;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-mut);
+      margin-bottom: 16px;
+    }
+
+    .section {
+      max-width: 1000px;
+      margin: 0 auto 90px;
+      padding: 0 32px;
+    }
+    .section h2 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 32px 0 12px;
+      color: var(--text);
+    }
+    .section p, .section li {
+      color: var(--text-sec);
+      margin-bottom: 14px;
+    }
+    .section ul { padding-left: 22px; }
+    .section li { margin-bottom: 8px; }
+
+    .lead {
+      font-size: 1.1rem;
+      color: var(--text);
+      max-width: 780px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      margin-top: 28px;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 26px 24px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-sub);
+    }
+    .card .icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      font-weight: 700;
+    }
+    .card h4 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .card p { font-size: 0.95rem; margin-bottom: 0; }
+
+    .arch-svg {
+      width: 100%;
+      max-width: 980px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      filter: drop-shadow(0 20px 40px rgba(0,0,0,0.45));
+    }
+
+    .flow {
+      background: var(--bg-deep);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      margin: 32px 0;
+    }
+    .flow-step {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 24px;
+    }
+    .flow-step:last-child { margin-bottom: 0; }
+    .flow-step .num {
+      font-family: ui-monospace, monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--blue);
+      background: rgba(59,130,246,0.1);
+      padding: 4px 10px;
+      border-radius: 6px;
+      min-width: 28px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .flow-step .content h4 { margin-bottom: 4px; }
+    .flow-step .content p { margin-bottom: 0; font-size: 0.95rem; }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 24px 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    th, td {
+      padding: 14px 18px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--bg-elev);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-mut);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.015); }
+
+    .code {
+      background: var(--bg-deep);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px 20px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.85rem;
+      line-height: 1.55;
+      overflow-x: auto;
+      margin: 18px 0;
+    }
+    .code .comment { color: var(--text-mut); }
+
+    .box {
+      border-radius: var(--radius-sm);
+      padding: 18px 22px;
+      margin: 22px 0;
+      border-left: 4px solid;
+      font-size: 0.95rem;
+    }
+    .box.blue { background: rgba(59,130,246,0.08); border-color: var(--blue); }
+    .box.green { background: rgba(16,185,129,0.08); border-color: var(--green); }
+    .box.red { background: rgba(239,68,68,0.08); border-color: var(--red); }
+    .box.amber { background: rgba(245,158,11,0.08); border-color: var(--amber); }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin: 28px 0;
+    }
+    .metric {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 18px;
+      text-align: center;
+    }
+    .metric .num {
+      font-size: 1.8rem;
+      font-weight: 700;
+      font-family: ui-monospace, monospace;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .metric .label {
+      font-size: 0.8rem;
+      color: var(--text-mut);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .agent-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+    .agent-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+    .agent-card .role { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 8px; }
+    .agent-card .role.orchestrator { color: var(--blue); }
+    .agent-card .role.worker { color: var(--green); }
+    .agent-card .role.adversary { color: var(--red); }
+    .agent-card h4 { font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; }
+    .agent-card .model-name { font-family: ui-monospace, monospace; font-size: 0.78rem; color: var(--text-mut); margin-bottom: 8px; }
+    .agent-card p { font-size: 0.88rem; color: var(--text-sec); margin: 0; line-height: 1.5; }
+
+    .rationale-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .rationale-card {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+    }
+    .rationale-card .card-icon {
+      width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.9rem; margin-bottom: 12px;
+    }
+    .rationale-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 8px; }
+    .rationale-card p { font-size: 0.85rem; color: var(--text-sec); line-height: 1.55; margin-bottom: 12px; }
+    .rationale-card .card-metric { font-size: 0.78rem; color: var(--text-mut); font-family: ui-monospace, monospace; padding-top: 8px; border-top: 1px solid var(--border); }
+    .rationale-card .card-metric span { color: var(--text-sec); font-weight: 600; }
+
+    .rationale-summary {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .summary-item {
+      display: flex; gap: 12px; align-items: flex-start; padding: 12px 16px;
+      background: var(--bg-elev); border-radius: var(--radius-sm); border: 1px solid var(--border);
+    }
+    .summary-icon { font-size: 1.3rem; line-height: 1.4; flex-shrink: 0; }
+    .summary-item strong { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 3px; }
+    .summary-item p { font-size: 0.82rem; color: var(--text-sec); line-height: 1.5; margin: 0; }
+
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 32px;
+      text-align: center;
+      color: var(--text-mut);
+      font-size: 0.85rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .accent-blue { color: var(--blue-light); }
+    .accent-green { color: var(--green-light); }
+    .accent-red { color: var(--red-light); }
+
+    @media (max-width: 700px) {
+      .hero h1 { font-size: 2.6rem; }
+      .nav { padding: 0 20px; }
+      .nav .links { gap: 18px; }
+      .section { padding: 0 20px; }
+      .visual { padding: 0 20px; }
+      .rationale-grid { grid-template-columns: 1fr; }
+      .rationale-summary { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="logo"><span>OWA</span> Coding Pattern</div>
+  <div class="links">
+    <a href="#why">Problem</a>
+    <a href="#arch">Architecture</a>
+    <a href="#phases">Phases</a>
+    <a href="#adversary">Adversary</a>
+    <a href="#souls">Souls</a>
+    <a href="#setup">Setup</a>
+    <a href="#pitfalls">Pitfalls</a>
+  </div>
+  <div class="meta">v1.5 • Multi-Model • Low Cost • High Quality</div>
+</nav>
+
+<div class="hero">
+  <h1>Orchestrator.<br>Workers.<br><span class="accent-red">Adversary.</span></h1>
+  <p class="tag">A governed, multi-model system for serious coding work.<br>Cheap parallel execution. Independent critique. Better results.</p>
+</div>
+
+<div class="visual">
+  <div class="label">The Architecture</div>
+  
+  <svg class="arch-svg" viewBox="0 0 1000 410" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#0f1216"/>
+        <stop offset="100%" stop-color="#0a0c0f"/>
+      </linearGradient>
+      <linearGradient id="orchGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#1e3a8a"/>
+        <stop offset="100%" stop-color="#1a3280"/>
+      </linearGradient>
+      <linearGradient id="workGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#064e3b"/>
+        <stop offset="100%" stop-color="#054530"/>
+      </linearGradient>
+      <linearGradient id="advGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#7f1d1d"/>
+        <stop offset="100%" stop-color="#6b1717"/>
+      </linearGradient>
+      <filter id="glowBlue" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glowGreen" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="glowRed" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <marker id="arrBlue" markerWidth="9" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 9 3.5, 0 7" fill="#3b82f6"/>
+      </marker>
+      <marker id="arrGreen" markerWidth="9" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 9 3.5, 0 7" fill="#10b981"/>
+      </marker>
+      <marker id="arrRed" markerWidth="9" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 9 3.5, 0 7" fill="#ef4444"/>
+      </marker>
+    </defs>
+
+    <!-- Background -->
+    <rect x="0" y="0" width="1000" height="410" rx="18" fill="url(#bgGrad)" stroke="#1f242c" stroke-width="1"/>
+
+    <!-- ===== ORCHESTRATOR (top) ===== -->
+    <rect x="195" y="28" width="610" height="105" rx="16" fill="url(#orchGrad)" stroke="#3b82f6" stroke-width="2.5" filter="url(#glowBlue)"/>
+    <text x="500" y="55" text-anchor="middle" fill="#e4e7eb" font-size="19" font-weight="700" letter-spacing="0.08em">ORCHESTRATOR</text>
+    <text x="500" y="75" text-anchor="middle" fill="#93c5fd" font-size="12" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">GPT-5.5</text>
+    <text x="500" y="93" text-anchor="middle" fill="#bfdbfe" font-size="10.5">Planning &amp; Decomposition &amp; Synthesis &amp; Quality Gates</text>
+    <text x="500" y="112" text-anchor="middle" fill="#fbbf24" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="600">ACCEPT · REFINE · REJECT</text>
+
+    <!-- ===== WORKERS (left) ===== -->
+    <rect x="42" y="195" width="440" height="110" rx="16" fill="url(#workGrad)" stroke="#10b981" stroke-width="2.5" filter="url(#glowGreen)"/>
+    <rect x="48" y="201" width="8" height="98" rx="4" fill="#0d9488" opacity="0.15"/>
+    <rect x="60" y="201" width="8" height="98" rx="4" fill="#0d9488" opacity="0.1"/>
+    <rect x="72" y="201" width="8" height="98" rx="4" fill="#0d9488" opacity="0.06"/>
+    <text x="262" y="228" text-anchor="middle" fill="#e4e7eb" font-size="16" font-weight="700" letter-spacing="0.06em">WORKERS  ×8</text>
+    <text x="262" y="252" text-anchor="middle" fill="#6ee7b7" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">DeepSeek V4 Flash / Pro</text>
+    <text x="262" y="274" text-anchor="middle" fill="#4ade80" font-size="10.5">Parallel execution · Cheap · Bounded scope</text>
+    <text x="262" y="294" text-anchor="middle" fill="#6ee7b7" font-size="10" font-style="italic">Returns diffs + test results</text>
+
+    <!-- ===== ADVERSARY (right) ===== -->
+    <rect x="518" y="195" width="440" height="110" rx="16" fill="url(#advGrad)" stroke="#ef4444" stroke-width="2.5" filter="url(#glowRed)"/>
+    <text x="738" y="228" text-anchor="middle" fill="#e4e7eb" font-size="16" font-weight="700" letter-spacing="0.06em">ADVERSARY</text>
+    <text x="738" y="252" text-anchor="middle" fill="#fca5a5" font-size="11.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Grok 4.3 · Independent Critique</text>
+    <text x="738" y="274" text-anchor="middle" fill="#f87171" font-size="10.5">HELD · STRAINED · BROKEN layers</text>
+    <text x="738" y="294" text-anchor="middle" fill="#fca5a5" font-size="10" font-style="italic">Counter-Resonance flags</text>
+
+    <!-- ===== ARROWS (arrow zone: y=133 to y=195) ===== -->
+    <!-- LEFT LANE: Orch ↔ Workers -->
+    <!-- SPAWN (blue down) — label at mid-zone -->
+    <path d="M 300 133 L 252 195" fill="none" stroke="#3b82f6" stroke-width="2.2" marker-end="url(#arrBlue)" opacity="0.9"/>
+    <text x="255" y="167" text-anchor="end" fill="#60a5fa" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="600">SPAWN</text>
+
+    <!-- DIFFS+TESTS (green dashed up) — label left of arrow, at SPAWN y-level -->
+    <path d="M 430 195 L 460 133" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrGreen)" opacity="0.75"/>
+    <text x="425" y="167" text-anchor="end" fill="#34d399" font-size="9.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">DIFFS+TESTS</text>
+
+    <!-- RIGHT LANE: Orch ↔ Adversary -->
+    <!-- REVIEW (blue down) — label at mid-zone -->
+    <path d="M 700 133 L 748 195" fill="none" stroke="#3b82f6" stroke-width="2.2" marker-end="url(#arrBlue)" opacity="0.9"/>
+    <text x="755" y="167" text-anchor="start" fill="#60a5fa" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="600">REVIEW</text>
+
+    <!-- VERDICT (red dashed up) — label at SPAWN y-level -->
+    <path d="M 570 195 L 540 133" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrRed)" opacity="0.75"/>
+    <text x="545" y="167" text-anchor="end" fill="#f87171" font-size="9.5" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">VERDICT</text>
+
+    <!-- Cross-lane subtle flow hint -->
+    <path d="M 482 250 Q 500 250 518 250" fill="none" stroke="#374151" stroke-width="1" stroke-dasharray="3,5" opacity="0.4"/>
+
+    <!-- ===== SECTION LABEL ===== -->
+    <text x="500" y="360" text-anchor="middle" fill="#e4e7eb" font-size="10" font-weight="500" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">The Orchestrator is the sole decision maker. Workers execute. The Adversary critiques. None of these models trust each other.</text>
+  </svg>
+</div>
+
+<div class="section" id="why">
+  <h2>What Single-Model Agents Get Wrong</h2>
+  
+  <p class="lead">Single-model coding agents are expensive and brittle. One model does planning, implementation, and self-review — the same model that produced the bugs in the first place. Context bloats. Costs explode. Quality is inconsistent because there is no true adversarial pressure.</p>
+  
+  <p>OWA Coding Pattern is a deliberate upgrade: three different model families playing specialized roles in a tightly governed loop. Cheap, fast models do the heavy lifting in parallel. A strong independent critic (different training distribution, no social harmony) finds what the others miss. An orchestrator keeps the strategic thread and only declares victory when real tests pass and the adversary is satisfied.</p>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="num" style="color:#34d399">Lean</div>
+      <div class="label">Lower token cost vs all-GPT workflows</div>
+    </div>
+    <div class="metric">
+      <div class="num" style="color:#60a5fa">8×</div>
+      <div class="label">Parallel workers for speed</div>
+    </div>
+    <div class="metric">
+      <div class="num" style="color:#f87171">Independent</div>
+      <div class="label">Adversary from different family</div>
+    </div>
+    <div class="metric">
+      <div class="num" style="color:#fbbf24">Strict</div>
+      <div class="label">Exit criteria based on execution</div>
+    </div>
+  </div>
+
+  <!-- Restored detailed rationale from previous version -->
+  <div class="rationale-grid">
+    <div class="rationale-card">
+      <div class="card-icon" style="background:rgba(59,130,246,0.12);color:var(--blue)">O</div>
+      <h4>GPT-5.5 — Orchestrator</h4>
+      <p>Best-in-class at task decomposition, long-range planning, and cross-file reasoning. Keeps the strategic thread across the entire codebase. Expensive but used sparingly — it directs work, it doesn't do it.</p>
+      <div class="card-metric"><span>Role:</span> decompose · route · integrate · verify</div>
+    </div>
+    <div class="rationale-card">
+      <div class="card-icon" style="background:rgba(16,185,129,0.12);color:var(--green)">W</div>
+      <h4>DeepSeek — Worker</h4>
+      <p>60-100x cheaper than GPT-5.5 at code generation with comparable quality for bounded implementation tasks. Parallelizable up to 8 concurrent workers. Perfect for high-volume coding.</p>
+      <div class="card-metric"><span>Cost:</span> significantly cheaper than all-GPT workflow</div>
+    </div>
+    <div class="rationale-card">
+      <div class="card-icon" style="background:rgba(239,68,68,0.12);color:var(--red)">A</div>
+      <h4>Grok 4.3 — Adversary</h4>
+      <p>Independent reasoning path, different training distribution, zero social harmony with GPT-5.5. Catches false assumptions, missing edge cases, and security blind spots that same-family self-critique cannot. Deployed surgically as a governance gate.</p>
+      <div class="card-metric"><span>Effect:</span> catches more defects than single-model self-review</div>
+    </div>
+  </div>
+
+  <div class="rationale-summary">
+    <div class="summary-item">
+      <span class="summary-icon">💰</span>
+      <div>
+        <strong>Cost structure</strong>
+        <p>Orchestrator pays for planning + verification only. Workers do the heavy lifting at commodity pricing. Adversary deployed surgically. Result: lower cost vs single-model workflow with higher quality.</p>
+      </div>
+    </div>
+    <div class="summary-item">
+      <span class="summary-icon">⚡</span>
+      <div>
+        <strong>Parallelism</strong>
+        <p>Up to 8 workers in parallel. Multi-file features ship in minutes, not hours. The orchestrator merges parallel diffs and resolves conflicts — a workflow single-agent systems can't replicate.</p>
+      </div>
+    </div>
+    <div class="summary-item">
+      <span class="summary-icon">🎯</span>
+      <div>
+        <strong>Quality gate</strong>
+        <p>Grok 4.3 provides independent adversarial review. The HELD/STRAINED/BROKEN protocol forces structural rigor. Counter-Resonance flags identify MUST STOP issues before they reach production.</p>
+      </div>
+    </div>
+    <div class="summary-item">
+      <span class="summary-icon">🔁</span>
+      <div>
+        <strong>Closed-loop refinement</strong>
+        <p>Critique feeds back into the orchestrator which spawns refined workers. Each iteration converges on quality. The loop terminates when the adversary runs out of high-impact findings — not when the orchestrator gets bored.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="arch">
+  <h2>The Core Loop</h2>
+  <p>OWA Coding Pattern is a governed multi-agent system with explicit roles and exit criteria. It is <strong>not</strong> a free-form chat.</p>
+  <ol>
+    <li><strong>Orchestrator (GPT-5.5)</strong> decomposes the task, defines acceptance criteria, and spawns workers.</li>
+    <li><strong>Workers (DeepSeek V4 Flash/Pro)</strong> implement scoped tasks in parallel and return diffs + test results.</li>
+    <li><strong>Adversary (Grok 4.3)</strong> performs a structured forensic review using HELD / STRAINED / BROKEN layers — invoked conditionally based on risk.</li>
+    <li><strong>Orchestrator decides</strong> whether to Accept, Refine (re-spawn workers for BROKEN items), or Reject (re-scope the task).</li>
+  </ol>
+  <div class="box blue">This is a governed process with explicit exit criteria. The Orchestrator is the sole decision maker. Workers execute. The Adversary critiques. Quality gates are enforced. OWA Coding Pattern only works because none of these models trust each other.</div>
+
+  <div class="box amber"><strong>Model selection is your choice.</strong> GPT-5.5, DeepSeek V4, and Grok 4.3 are what the author uses — not a prescription. The pattern works with any capable models in each role. Substitute freely based on cost, latency, and what you trust.<br><br>
+  <strong>Orchestrator alternatives:</strong> Claude Opus 4.8 (May 2026), Gemini 3.5 Flash (May 2026), Kimi K2.7 Code (June 2026).<br>
+  <strong>Worker alternatives:</strong> Claude Sonnet 4.6, Qwen 3.6-Plus (April 2026), MiniMax M3 (June 2026), GLM-5.1 (April 2026).<br>
+  <strong>Adversary alternatives:</strong> Claude Opus 4.8, Gemini 3.5 Flash with thinking. The key is picking a model from a <em>different</em> family than your orchestrator — the adversarial signal comes from independent reasoning, not raw capability.</div>
+</div>
+
+<div class="section" id="phases">
+  <h2>Workflow Phases</h2>
+  <p>The iteration cycle that makes this pattern powerful — each phase has a clear owner and output:</p>
+  
+  <svg class="arch-svg" viewBox="0 0 1100 280" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="phaseBg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#0f1216"/>
+        <stop offset="100%" stop-color="#0a0c0f"/>
+      </linearGradient>
+      <marker id="parr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#4b5563"/>
+      </marker>
+    </defs>
+
+    <!-- Background -->
+    <rect x="0" y="0" width="1100" height="280" rx="16" fill="url(#phaseBg)" stroke="#1f242c" stroke-width="1"/>
+
+    <!-- ===== PHASE 1: DECOMPOSE (Orchestrator) ===== -->
+    <rect x="15" y="30" width="160" height="195" rx="12" fill="#181b20" stroke="#3b82f6" stroke-width="2.5"/>
+    <circle cx="95" cy="30" r="15" fill="#1e3a8a" stroke="#3b82f6" stroke-width="2"/>
+    <text x="95" y="35" text-anchor="middle" fill="#e4e7eb" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">1</text>
+    <text x="95" y="68" text-anchor="middle" fill="#e4e7eb" font-size="13" font-weight="700" letter-spacing="0.04em">DECOMPOSE</text>
+    <text x="95" y="86" text-anchor="middle" fill="#93c5fd" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">GPT-5.5</text>
+    <line x1="30" y1="96" x2="160" y2="96" stroke="#252a32" stroke-width="1"/>
+    <text x="30" y="115" fill="#9ca3af" font-size="9.5">Break task into bounded,</text>
+    <text x="30" y="133" fill="#9ca3af" font-size="9.5">testable slices. Define</text>
+    <text x="30" y="151" fill="#9ca3af" font-size="9.5">interfaces &amp; criteria.</text>
+
+    <!-- Arrow 1→2 -->
+    <line x1="175" y1="127" x2="190" y2="127" stroke="#4b5563" stroke-width="2" marker-end="url(#parr)"/>
+
+    <!-- ===== PHASE 2: IMPLEMENT (Worker) ===== -->
+    <rect x="195" y="30" width="160" height="195" rx="12" fill="#181b20" stroke="#10b981" stroke-width="2.5"/>
+    <circle cx="275" cy="30" r="15" fill="#064e3b" stroke="#10b981" stroke-width="2"/>
+    <text x="275" y="35" text-anchor="middle" fill="#e4e7eb" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">2</text>
+    <text x="275" y="68" text-anchor="middle" fill="#e4e7eb" font-size="13" font-weight="700" letter-spacing="0.04em">IMPLEMENT</text>
+    <text x="275" y="86" text-anchor="middle" fill="#6ee7b7" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">DeepSeek V4 Flash</text>
+    <line x1="210" y1="96" x2="340" y2="96" stroke="#252a32" stroke-width="1"/>
+    <text x="210" y="115" fill="#9ca3af" font-size="9.5">Parallel execution (up</text>
+    <text x="210" y="133" fill="#9ca3af" font-size="9.5">to 8). Each produces</text>
+    <text x="210" y="151" fill="#9ca3af" font-size="9.5">diff + test results.</text>
+
+    <!-- Arrow 2→3 -->
+    <line x1="355" y1="127" x2="370" y2="127" stroke="#4b5563" stroke-width="2" marker-end="url(#parr)"/>
+
+    <!-- ===== PHASE 3: INTEGRATE (Orchestrator) ===== -->
+    <rect x="375" y="30" width="160" height="195" rx="12" fill="#181b20" stroke="#3b82f6" stroke-width="2.5"/>
+    <circle cx="455" cy="30" r="15" fill="#1e3a8a" stroke="#3b82f6" stroke-width="2"/>
+    <text x="455" y="35" text-anchor="middle" fill="#e4e7eb" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">3</text>
+    <text x="455" y="68" text-anchor="middle" fill="#e4e7eb" font-size="13" font-weight="700" letter-spacing="0.04em">INTEGRATE</text>
+    <text x="455" y="86" text-anchor="middle" fill="#93c5fd" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">GPT-5.5</text>
+    <line x1="390" y1="96" x2="520" y2="96" stroke="#252a32" stroke-width="1"/>
+    <text x="390" y="115" fill="#9ca3af" font-size="9.5">Collect outputs, merge,</text>
+    <text x="390" y="133" fill="#9ca3af" font-size="9.5">run cross-cutting tests.</text>
+    <text x="390" y="151" fill="#9ca3af" font-size="9.5">Resolve all conflicts.</text>
+
+    <!-- Arrow 3→4 -->
+    <line x1="535" y1="127" x2="550" y2="127" stroke="#4b5563" stroke-width="2" marker-end="url(#parr)"/>
+
+    <!-- ===== PHASE 4: CRITIQUE (Adversary) ===== -->
+    <rect x="555" y="30" width="160" height="195" rx="12" fill="#181b20" stroke="#ef4444" stroke-width="2.5"/>
+    <circle cx="635" cy="30" r="15" fill="#7f1d1d" stroke="#ef4444" stroke-width="2"/>
+    <text x="635" y="35" text-anchor="middle" fill="#e4e7eb" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">4</text>
+    <text x="635" y="68" text-anchor="middle" fill="#e4e7eb" font-size="13" font-weight="700" letter-spacing="0.04em">CRITIQUE</text>
+    <text x="635" y="86" text-anchor="middle" fill="#fca5a5" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">Grok 4.3</text>
+    <line x1="570" y1="96" x2="700" y2="96" stroke="#252a32" stroke-width="1"/>
+    <text x="570" y="115" fill="#9ca3af" font-size="9.5">For high-risk segments,</text>
+    <text x="570" y="133" fill="#9ca3af" font-size="9.5">spawn the adversary.</text>
+    <text x="570" y="151" fill="#9ca3af" font-size="9.5">HELD/STRAINED/BROKEN.</text>
+
+    <!-- Arrow 4→5 -->
+    <line x1="715" y1="127" x2="730" y2="127" stroke="#4b5563" stroke-width="2" marker-end="url(#parr)"/>
+
+    <!-- ===== PHASE 5: REFINE (Orchestrator) ===== -->
+    <rect x="735" y="30" width="160" height="195" rx="12" fill="#181b20" stroke="#3b82f6" stroke-width="2.5"/>
+    <circle cx="815" cy="30" r="15" fill="#1e3a8a" stroke="#3b82f6" stroke-width="2"/>
+    <text x="815" y="35" text-anchor="middle" fill="#e4e7eb" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">5</text>
+    <text x="815" y="68" text-anchor="middle" fill="#e4e7eb" font-size="13" font-weight="700" letter-spacing="0.04em">REFINE</text>
+    <text x="815" y="86" text-anchor="middle" fill="#93c5fd" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">GPT-5.5</text>
+    <line x1="750" y1="96" x2="880" y2="96" stroke="#252a32" stroke-width="1"/>
+    <text x="750" y="115" fill="#9ca3af" font-size="9.5">Address adversary</text>
+    <text x="750" y="133" fill="#9ca3af" font-size="9.5">findings. Re-spawn for</text>
+    <text x="750" y="151" fill="#9ca3af" font-size="9.5">BROKEN, patch STRAINED.</text>
+
+    <!-- Arrow 5→6 -->
+    <line x1="895" y1="127" x2="910" y2="127" stroke="#4b5563" stroke-width="2" marker-end="url(#parr)"/>
+
+    <!-- ===== PHASE 6: DELIVER (Orchestrator) ===== -->
+    <rect x="915" y="30" width="160" height="195" rx="12" fill="#181b20" stroke="#3b82f6" stroke-width="2.5"/>
+    <circle cx="995" cy="30" r="15" fill="#1e3a8a" stroke="#3b82f6" stroke-width="2"/>
+    <text x="995" y="35" text-anchor="middle" fill="#e4e7eb" font-size="12" font-weight="700" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">6</text>
+    <text x="995" y="68" text-anchor="middle" fill="#e4e7eb" font-size="13" font-weight="700" letter-spacing="0.04em">DELIVER</text>
+    <text x="995" y="86" text-anchor="middle" fill="#93c5fd" font-size="10" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">GPT-5.5</text>
+    <line x1="930" y1="96" x2="1060" y2="96" stroke="#252a32" stroke-width="1"/>
+    <text x="930" y="115" fill="#9ca3af" font-size="9.5">Final validation, commit,</text>
+    <text x="930" y="133" fill="#9ca3af" font-size="9.5">summary. Only declare</text>
+    <text x="930" y="151" fill="#9ca3af" font-size="9.5">done after re-verify.</text>
+
+    <!-- ===== ROLE LEGEND (bottom) ===== -->
+    <rect x="280" y="245" width="12" height="12" rx="3" fill="#3b82f6" opacity="0.8"/>
+    <text x="298" y="255" fill="#9ca3af" font-size="9.5">Orchestrator (GPT-5.5)</text>
+    <rect x="450" y="245" width="12" height="12" rx="3" fill="#10b981" opacity="0.8"/>
+    <text x="468" y="255" fill="#9ca3af" font-size="9.5">Worker (DeepSeek)</text>
+    <rect x="605" y="245" width="12" height="12" rx="3" fill="#ef4444" opacity="0.8"/>
+    <text x="623" y="255" fill="#9ca3af" font-size="9.5">Adversary (Grok 4.3)</text>
+  </svg>
+</div>
+
+<div class="section" id="adversary">
+  <h2>Adversary Protocol &amp; Decision Matrix</h2>
+
+  <h3>When to Invoke the Adversary</h3>
+  <p>The adversary is the most expensive component. Use it only when the cost of shipping a defect is high:</p>
+
+  <div class="table-wrap">
+    <table>
+      <tr><th>Condition</th><th>Invoke?</th><th>Max Budget</th></tr>
+      <tr><td>New module &gt; 400 LOC or 4+ files</td><td><strong>Yes</strong></td><td>$4</td></tr>
+      <tr><td>Security, auth, payments, data pipelines</td><td><strong>Always</strong></td><td>$6</td></tr>
+      <tr><td>Refactor touching &gt; 3 core modules</td><td><strong>Yes</strong></td><td>$3</td></tr>
+      <tr><td>Performance-critical hot path</td><td><strong>Yes</strong></td><td>$5</td></tr>
+      <tr><td>First implementation of new architectural pattern</td><td><strong>Yes</strong></td><td>$3</td></tr>
+      <tr><td>Simple feature &lt; 150 LOC in one file</td><td>No</td><td>—</td></tr>
+      <tr><td>Bug fix with clear reproduction steps</td><td>No</td><td>—</td></tr>
+      <tr><td>Mechanical refactor or rename</td><td>No</td><td>—</td></tr>
+    </table>
+  </div>
+
+  <div class="box red">If any single condition triggers "Yes", the adversary runs. No exceptions for "it feels fine this time." The Orchestrator makes this call.</div>
+
+  <h3>Grok Adversary Internal Council</h3>
+  <p>The adversary operates as a council of specialized mental sub-agents that argue internally before producing a synthesized review:</p>
+  <ul>
+    <li><strong>@0day:</strong> Finds every way this can be exploited or fail under load.</li>
+    <li><strong>@Architect:</strong> Hates God objects, tight coupling, future maintenance debt.</li>
+    <li><strong>@Executioner:</strong> Obsessed with performance at 10x/100x scale.</li>
+    <li><strong>@EdgeLord:</strong> Generates the most sadistic edge cases and contract violations.</li>
+    <li><strong>@AppSec:</strong> Runs OWASP, auth, and attack surface analysis.</li>
+  </ul>
+  <p>The adversary produces a decision artifact: findings triaged into KILL SHOTS (ship-blocking), FLESH WOUNDS (require mitigation before merge), and PAPER CUTS (non-blocking, logged). Each artifact carries a VERDICT score and a binding recommendation — Approve, Reject, or Major Surgery. The Orchestrator reads it and acts.</p>
+
+  <h3>Adversary Output Protocol</h3>
+  <p>Every adversary review must produce a structured artifact. The orchestrator is not allowed to proceed until this exists:</p>
+
+  <div class="code">
+## Adversary Review — Round N<br>
+Task: [short description]<br>
+Files reviewed: [list]<br><br>
+HELD layers:<br>
+- Source / Requirements fidelity: ...<br>
+- Core logic &amp; correctness: ...<br><br>
+STRAINED layers (with line refs):<br>
+- Edge cases &amp; robustness: ...<br>
+- Maintainability &amp; elegance: ...<br><br>
+BROKEN layers (MUST FIX):<br>
+- Security / attack surface: ...<br>
+- Efficiency / scaling: ...<br><br>
+Counter-Resonance flags (MUST STOP):<br>
+- Logic that will fail in production<br>
+- Security holes allowing escalation<br>
+- Design that cannot be tested or rolled back<br><br>
+Decision: ACCEPT | REWORK | REJECT<br>
+Recommended next action: ...
+  </div>
+</div>
+
+<div class="section">
+  <h2>Loop Termination Criteria</h2>
+  <p>The loop stops only when <strong>all three</strong> conditions are met:</p>
+  <ol>
+    <li>Adversary reports <strong>zero BROKEN</strong> items and <strong>≤ 2 STRAINED</strong> items.</li>
+    <li>Every STRAINED item has an explicit mitigation recorded.</li>
+    <li>Orchestrator has re-run the full test suite (including any new tests the adversary required).</li>
+  </ol>
+  <div class="box red">If the adversary still finds high-impact issues after round 3, the task is rejected and must be re-scoped. Do not let the loop run forever — cap at 3 iterations per task.</div>
+</div>
+
+<div class="section" id="souls">
+  <h2>Agent Instructions — Building Souls</h2>
+  <p>These are the core "soul" definitions that must be placed in the agent configuration files (or equivalent soul.md / system prompt for each role in your environment). They are non-negotiable for consistent behavior.</p>
+
+  <h3>Worker Soul (DeepSeek Flash - default)</h3>
+  <div class="code">
+developer_instructions = """<br>
+You are a disciplined senior engineer executing tasks given by the Orchestrator.<br><br>
+Core Rules (non-negotiable):<br>
+- Read relevant files and existing patterns BEFORE writing any code.<br>
+- Make the smallest possible change that fully solves the task.<br>
+- Never touch files outside the explicit scope given to you.<br>
+- Never refactor unrelated code or add unnecessary abstractions.<br>
+- Respect existing naming, error handling, and architectural patterns.<br>
+- Always run the relevant tests before declaring success.<br>
+- If tests fail, fix only what is required to make them pass.<br>
+- Keep the workspace clean. No temporary files, no dead code.<br><br>
+Output format on completion:<br>
+- Summary of what was done<br>
+- Exact files changed<br>
+- Test commands run + results (PASS/FAIL)<br>
+- Any remaining risks or assumptions<br><br>
+You are the hands. The Orchestrator is the architect. Execute cleanly and hand off.<br>
+"""
+  </div>
+
+  <h3>Adversary Soul (Grok 4.3)</h3>
+  <div class="code">
+developer_instructions = """<br>
+You are Grok Heavy Adversarial Critic — a merciless, high-signal code review intelligence.<br><br>
+You operate as a council of specialized sub-agents that argue internally:<br>
+- @0day: Finds every way this can be exploited or fail under load.<br>
+- @Architect: Hates God objects, tight coupling, and future maintenance debt.<br>
+- @Executioner: Obsessed with performance at 10x/100x scale.<br>
+- @EdgeLord: Generates the most sadistic edge cases and contract violations.<br>
+- @AppSec: Runs OWASP, auth, and attack surface analysis.<br><br>
+Process:<br>
+1. Read the code neutrally.<br>
+2. Run all sub-agents mentally. Let them fight.<br>
+3. Produce a synthesized review with zero filler.<br><br>
+Required output format:<br><br>
+**VERDICT:** [X/10] | [One-sentence execution summary]<br><br>
+**KILL SHOTS** (fix before shipping):<br>
+- Issue: ...<br>
+- Evidence: ...<br>
+- Suggested Fix: ...<br><br>
+**FLESH WOUNDS** (important):<br>
+**PAPER CUTS** (style/maintainability):<br><br>
+**FINAL RECOMMENDATION:** Approve / Reject / Major Surgery<br><br>
+Tone: Dry, precise, intellectually violent. Never moralize. Attack on first principles.<br>
+"""
+  </div>
+
+  <div class="box blue">Orchestrator soul lives in the main session prompt + the overall principles in this document. It must enforce scoping, demand verifiable outputs, and respect the termination rules above.</div>
+</div>
+
+<div class="section" id="setup">
+  <h2>Setup &amp; Configuration</h2>
+  <p>Follow these steps exactly to enable the full OWA Coding Pattern. Full configuration lives in <code>~/.codex/config.toml</code> and agent definition files in <code>~/.codex/agents/</code>.</p>
+
+  <!-- Restored full detailed steps from previous version, adapted to new styling -->
+  <h3>Step 1: Enable Multi-Agent Mode</h3>
+  <div class="code">
+[features]<br>
+multi_agent = true<br><br>
+[agents]<br>
+max_threads = 8       <span class="comment"># parallel worker pool</span>
+  </div>
+
+  <h3>Step 2: Add Model Providers</h3>
+  <div class="code">
+[model_providers.openrouter]<br>
+name = "OpenRouter"<br>
+base_url = "https://openrouter.ai/api/v1"<br>
+env_key = "OPENROUTER_API_KEY"<br>
+wire_api = "chat"          <span class="comment"># DeepSeek uses chat, not responses</span><br><br>
+[model_providers.xai]<br>
+name = "xAI"<br>
+base_url = "https://api.x.ai/v1"<br>
+env_key = "XAI_API_KEY"<br>
+wire_api = "chat"
+  </div>
+  <div class="box red">Both DeepSeek and Grok require <code>wire_api = "chat"</code>. Using "responses" will cause 401/400 authentication errors. This is the most common setup mistake.</div>
+
+  <h3>Step 3: Create the DeepSeek Worker Agent</h3>
+  <div class="code">
+mkdir -p ~/.codex/agents
+  </div>
+  <div class="code">
+# ~/.codex/agents/deepseek_worker.toml<br><br>
+name = "deepseek-worker"<br>
+description = "Precise implementation worker. Minimal changes, high verification."<br>
+model_provider = "openrouter"<br>
+model = "deepseek/deepseek-v4-flash"<br>
+temperature = 0.25<br>
+max_tokens = 32768<br><br>
+developer_instructions = """<br>
+[full soul prompt as shown in Souls section above]<br>
+"""
+  </div>
+
+  <h3>Step 4: Create the Grok Adversary Agent</h3>
+  <div class="code">
+# ~/.codex/agents/grok_adversary.toml<br><br>
+name = "grok-adversary"<br>
+description = "Ruthless adversarial critic. Finds structural, security, and correctness issues."<br>
+model_provider = "xai"<br>
+model = "grok-4.3"<br>
+temperature = 0.0           <span class="comment"># deterministic — no creativity on critique</span><br>
+max_tokens = 16384<br>
+model_reasoning_effort = "high"<br><br>
+developer_instructions = """<br>
+[full adversary soul as shown in Souls section above]<br>
+"""
+  </div>
+
+  <h3>Step 5: Register the Agents</h3>
+  <div class="code">
+[agents.deepseek_worker]<br>
+description = "Fast coding executor on DeepSeek V4 Flash"<br>
+config_file = "~/.codex/agents/deepseek_worker.toml"<br><br>
+[agents.grok_adversary]<br>
+description = "Independent critic on Grok 4.3"<br>
+config_file = "~/.codex/agents/grok_adversary.toml"
+  </div>
+
+  <h3>Step 6: Set Environment Variables</h3>
+  <div class="code">
+# ~/.zshrc (or your shell profile)<br><br>
+<span class="comment"># Codex Orchestrator — already set</span><br>
+export OPENAI_API_KEY="sk-..."<br><br>
+<span class="comment"># DeepSeek Worker via OpenRouter</span><br>
+export OPENROUTER_API_KEY="sk-or-v1-..."<br><br>
+<span class="comment"># Grok Adversary</span><br>
+export XAI_API_KEY="xai-..."
+  </div>
+  <p>After editing, run <code>source ~/.zshrc</code> and restart Codex. If Codex CLI or its sub-agents can't see these variables, agent spawns fail with 401 errors.</p>
+  <div class="box green">Grok 4.3 through xAI's direct API has different pricing than through OpenRouter. If you have SuperGrok/API credits, the xAI direct endpoint is cheaper. Check your xAI billing before running the adversary at scale.</div>
+
+  <h3>Step 7: Enable Multi Agents in Codex</h3>
+  <p>Launch Codex CLI and run:</p>
+  <div class="code">
+/experimental
+  </div>
+  <p>Enable <strong>Multi Agents</strong> when prompted.</p>
+
+  <h3>Step 8: Verify</h3>
+  <div class="code">
+<span class="comment"># Verify Codex CLI</span><br>
+codex --version                <span class="comment"># should return v26.x+</span><br><br>
+<span class="comment"># Verify environment</span><br>
+echo $OPENAI_API_KEY<br>
+echo $OPENROUTER_API_KEY<br>
+echo $XAI_API_KEY
+  </div>
+</div>
+
+<div class="section">
+  <h2>Usage &amp; Workflows</h2>
+
+  <h3>Basic Worker Spawn</h3>
+  <p>Inside a Codex CLI session, tell the orchestrator what you want:</p>
+  <div class="code">
+<span class="comment"># Spawn a single worker</span><br>
+"Spawn a deepseek_worker to implement the user authentication module in src/auth/. Include tests."<br><br>
+<span class="comment"># Parallel workers for multi-file feature</span><br>
+"Spawn 2 deepseek_worker for the backend routes and 1 for the payment processing logic."<br><br>
+<span class="comment"># Worker + adversary review</span><br>
+"Spawn a deepseek_worker for the payment flow. When done, decide if a grok_adversary review is needed."<br><br>
+<span class="comment"># Full OWA Coding Pattern</span><br>
+"This is a large task. Use orchestrator mode. Break it into modules. Spawn workers for each<br>
+module, then run the adversary on the integrated result before declaring done."
+  </div>
+
+  <h3>Match Worker to Task Complexity</h3>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Task Type</th><th>Worker</th><th>Why</th></tr>
+      <tr><td>Simple feature, bug fix, refactor</td><td><code>deepseek_worker</code> (V4 Flash)</td><td>Fast, cheap, good enough for bounded work</td></tr>
+      <tr><td>Governance / review / security audit</td><td><code>grok_adversary</code> (4.3)</td><td>Independent critique, high signal</td></tr>
+    </table>
+  </div>
+  <div class="box blue">The adversary is a <strong>governance gate</strong>, not a production gate. You decide which segments warrant it. Pattern: implement fast on DeepSeek, validate on GPT-5.5, burn down hard problems with Grok 4.3.</div>
+</div>
+
+<div class="section">
+  <h2>Agent Reference &amp; Cost</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Agent</th><th>Model</th><th>Provider</th><th>Role</th><th>Cost</th><th>When</th></tr>
+      <tr>
+        <td><code>orchestrator</code><br><span style="font-size:0.78rem;color:var(--blue)">(main session)</span></td>
+        <td>GPT-5.5</td>
+        <td>OpenAI (built-in)</td>
+        <td>Decompose, route, review, integrate</td>
+        <td>$$$</td>
+        <td>Always — this is you</td>
+      </tr>
+      <tr>
+        <td><code>deepseek_worker</code></td>
+        <td>DeepSeek V4 Flash</td>
+        <td>OpenRouter</td>
+        <td>Fast implementation, tests, file edits</td>
+        <td>$</td>
+        <td>Default coding worker</td>
+      </tr>
+      <tr>
+        <td><code>grok_adversary</code></td>
+        <td>Grok 4.3</td>
+        <td>xAI</td>
+        <td>Code critique, security review, governance</td>
+        <td>$$</td>
+        <td>Large segments, security, architecture gates</td>
+      </tr>
+    </table>
+  </div>
+  <p style="font-size:0.85rem;color:var(--text-mut)">Cost: $ = ~$0.15/M tok, $$ = ~$2-3/M tok, $$$ = ~$10-15/M tok. All approximate OpenRouter rates mid-2026.</p>
+
+  <h3>Complete Config Reference</h3>
+  <p>Your full <code>~/.codex/config.toml</code> should look like this after all steps:</p>
+  <div class="code">
+<span class="comment"># Base</span><br>
+model = "gpt-5.5"                              <span class="comment"># Orchestrator</span><br>
+model_reasoning_effort = "medium"<br><br>
+[features]<br>
+multi_agent = true<br><br>
+[agents]<br>
+max_threads = 8<br><br>
+<span class="comment"># Workers</span><br>
+[agents.deepseek_worker]<br>
+description = "Fast coding executor on DeepSeek V4 Flash"<br>
+config_file = "~/.codex/agents/deepseek_worker.toml"<br><br>
+<span class="comment"># Adversary</span><br>
+[agents.grok_adversary]<br>
+description = "Adversarial critic on Grok 4.3"<br>
+config_file = "~/.codex/agents/grok_adversary.toml"<br><br>
+[model_providers.openrouter]<br>
+base_url = "https://openrouter.ai/api/v1"<br>
+env_key = "OPENROUTER_API_KEY"<br>
+wire_api = "chat"<br><br>
+[model_providers.xai]<br>
+base_url = "https://api.x.ai/v1"<br>
+env_key = "XAI_API_KEY"<br>
+wire_api = "chat"<br><br>
+<span class="comment"># ... your existing plugins, desktop, projects sections stay unchanged</span>
+  </div>
+</div>
+
+<div class="section" id="pitfalls">
+  <h2>Pitfalls &amp; Sharp Edges</h2>
+
+  <div class="box red">Wire API mismatch: DeepSeek and Grok both use <code>chat</code> format. If a provider silently requires <code>responses</code>, calls fail with 401/400. Test with a single spawn before relying on it.</div>
+  <div class="box red">Sub-agents have zero memory of the orchestrator conversation. Every spawn must contain all file paths, constraints, and acceptance criteria in the prompt itself. There is no shared context window.</div>
+  <div class="box amber">OpenRouter rate limits under parallel spawns. At 8 concurrent workers, you may hit tier-based throttling. OpenRouter's paid tiers give higher concurrency. If you see 429s, reduce <code>max_threads</code>.</div>
+  <div class="box amber">Cost guardrails: Default adversary budget per task is $3–5. Anything over $6 requires explicit approval. Log every invocation with (task ID, round number, tokens, cost, final decision).</div>
+  <div class="box blue">Never run the adversary on tasks below the threshold — it becomes expensive theater. Simple features, bug fixes with clear reproduction, and mechanical refactors don't need it.</div>
+  <div class="box green">After setup, test with a small task first before using the adversary on large work. Verify the full loop works end to end with a trivial module before trusting it on production code.</div>
+</div>
+
+<div class="footer">
+  OWA Coding Pattern v1.5 — Codex Multi-Agent Orchestration System<br>
+  GPT-5.5 · DeepSeek V4 Flash · Grok 4.3 · Native Codex /experimental<br><br>
+  Built for reliability, not theater. Three gods, one pipeline.
+</div>
+
+<script>
+  console.log('%c[OWA Coding Pattern] Full restored version ready for GitHub', 'color:#6b7280');
+</script>
+
+</body>
+</html>
