@@ -109,7 +109,7 @@ Tone: Dry, precise, intellectually violent. Never moralize. Attack on first prin
 
 If this pattern helps you ship better code, consider supporting continued development:
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/YOUR_USERNAME)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/parvezsyed)
 
 ---
 
